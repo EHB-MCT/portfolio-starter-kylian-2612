@@ -25,6 +25,20 @@ app.get('/artworks', (req, res) => {
       .catch((error) => res.status(500).json({ error }));
   });
   
+// Read One
+
+app.get('/artworks/:id', async (req, res) => {
+    const id = req.params.id;  
+    try {
+        const artwork = await db('artworks').where({ id }).first();
+        if (!artwork) {
+          return res.status(404).json({ error: 'Artwork not found' });
+        }
+        res.json(artwork);
+      } catch (err) {
+        res.status(500).json({ error: 'Error retrieving artwork' });
+      }
+    }); 
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
