@@ -17,7 +17,7 @@ app.post('/artworks', (req, res) => {
       .catch((error) => res.status(500).json({ error }));
   });
 
-  // Retrieve all artworks
+// Retrieve all artworks
 app.get('/artworks', (req, res) => {
     db('artworks')
       .select()
@@ -48,6 +48,17 @@ app.put('/artworks/:id', (req, res) => {
     .where({ id })
     .update({ title, artist_uuid, image_url, location })
     .then(() => res.send('Artwork updated successfully'))
+    .catch((error) => res.status(500).json({ error }));
+});
+
+// Delete an artwork
+app.delete('/artworks/:id', (req, res) => {
+  const id = req.params.id;
+
+  db('artworks')
+    .where({ id })
+    .del()
+    .then(() => res.send('Artwork deleted successfully'))
     .catch((error) => res.status(500).json({ error }));
 });
 
