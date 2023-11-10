@@ -1,7 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const knex = require('knex');
-const knexConfig = require('./knexfile');
+const knexConfig = require('./db/knexfile');
 
 const app = express();
 const db = knex(knexConfig.development);
