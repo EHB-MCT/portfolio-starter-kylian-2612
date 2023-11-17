@@ -1,3 +1,5 @@
+const { checkArtworkTitle} = require("./../helpers/endpointHelpers.js")
+
 const express = require('express');
 const bodyParser = require('body-parser');
 const knex = require('knex');
@@ -11,11 +13,18 @@ app.use(bodyParser.json());
 // Create a new artwork
 app.post('/artworks', (req, res) => {
     const { title, artist_uuid, image_url, location } = req.body;
-    db('artworks')
-      .insert({ title, artist_uuid, image_url, location })
-      .then(() => res.status(201).send('Artwork created successfully'))
-      .catch((error) => res.status(500).json({ error }));
-  });
+    if(checkArtworkTitle(artwork.title)) {
+      db('artworks')
+        .insert({ title, artist_uuid, image_url, location })
+        .then(() => res.status(201).json({message: 'Artwork created successfully'}))
+        .catch((error) => res.status(500).json({ error }));
+
+    } else {
+      res.status(401).send({ message: "title not formatted correctly"});
+    }
+
+});
+
 
 // Retrieve all artworks
 app.get('/artworks', (req, res) => {
