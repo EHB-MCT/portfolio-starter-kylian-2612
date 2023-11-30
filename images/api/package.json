@@ -4,10 +4,12 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test-watch": "jest --watchAll",
-    "test": "jest --detectOpenHandles --forceExit",
-    "start": "npx knex migrate:latest --cwd src/db && nodemon src/index.js --legacy-watch",
-    "dev": "npx knex migrate:latest --cwd .src/db && npx knex seed:run --cwd ;/src/db && run test-watch"
+    "migrate": "npx knex migrate:latest --cwd .src/db",
+    "test-watch": "jest --watchAll --detectOpenHandles",
+    "test": "jest --detectOpenHandles",
+    "start": "npm run migrate && node src/index.js && npm run test ",
+    "dev": " npm run migrate && npm run test-watch"
+    
   },
   "keywords": [],
   "author": "",
