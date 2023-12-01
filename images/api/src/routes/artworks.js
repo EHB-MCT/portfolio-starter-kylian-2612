@@ -3,7 +3,7 @@ const router = express.Router();
 const bodyParser = require('body-parser');
 const { checkArtworkTitle} = require("../helpers/endpointHelpers.js")
 const knex = require('knex');
-const knexConfig = require('./db/knexfile');
+const knexConfig = require('./../db/knexfile');
 
 const db = knex(knexConfig.development);
 
