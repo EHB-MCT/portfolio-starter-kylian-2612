@@ -1,0 +1,31 @@
+{
+  "name": "portfolio-starter-kylian-2612",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "migrate": "npx knex migrate:latest --cwd ./src/db",
+    "test-watch": "jest --watchAll --detectOpenHandles",
+    "test": "jest --detectOpenHandles",
+    "start": "npm run migrate && node src/index.js && npm run test ",
+    "dev": " npm run migrate && npm run test-watch"
+    
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.20.2",
+    "express": "^4.18.2",
+    "knex": "^3.0.1",
+    "mysql2": "^3.6.1",
+    "ngeohash": "^0.6.3",
+    "nodemon": "^3.0.1",
+    "pg": "^8.11.3"
+  },
+  "devDependencies": {
+    "assert": "^2.1.0",
+    "jest": "^29.7.0",
+    "supertest": "^6.3.3"
+  } 
+}
