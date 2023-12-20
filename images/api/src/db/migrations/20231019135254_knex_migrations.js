@@ -6,7 +6,6 @@ exports.up = function (knex) {
       table.string('artist_uuid')/* .notNullable() */;
       table.string('image_url')/* .notNullable() */;
       table.string('location_geohash').notNullable();
-      // Add any other columns as needed
     });
   };
   
