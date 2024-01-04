@@ -1,6 +1,6 @@
 services:
   api:
-    image: crshlab/cicdgroepa2023:latest
+    image: vkylian01/development_v:latest
     ports:
       - 8080:3000
     environment: 
