@@ -8,7 +8,8 @@
     "test-watch": "jest --watchAll --detectOpenHandles",
     "test": "jest --detectOpenHandles",
     "start": "npm run migrate && node src/index.js && npm run test ",
-    "dev": " npm run migrate && npm run test-watch"
+    "dev": " npm run migrate && npm run test-watch",
+    "prep":"npx knex migrate:latest --cwd src/db && jest --detectOpenHandles --forceExit"
   },
   "keywords": [],
   "author": "",
