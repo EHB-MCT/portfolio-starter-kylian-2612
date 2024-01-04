@@ -13,7 +13,7 @@ services:
     depends_on:
       store:
         condition: service_healthy
-      command: ["npm", "run", "prep"]
+    command: ["npm", "run", "prep"]
 
   store:
     ports:
