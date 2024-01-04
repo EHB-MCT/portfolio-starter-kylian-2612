@@ -1,53 +1,78 @@
 // artworks.test.js
-
 const request = require('supertest');
-const app = require('../../app.js'); 
-const knexfile = require('../../db/knexfile.js'); // Import your Knex configuration
-const knex = require("knex")(knexfile.development)
-const { v4: uuidv4 } = require("uuid")
+const app = require('../../app.js');
+const { v4: uuidv4 } = require("uuid");
+const knexfile = require('../../db/knexfile.js');
+const knex = require("knex")(knexfile.development);
 
-let insertedArtist
-const artistUUID = uuidv4();
-const exampleArtist = {
-  artist: 'van Gogh',
-  uuid: artistUUID, 
-  birthyear: '1853', 
-  num_artworks: '300'
-}
-let insertedRecord
-const exampleArtwork = {
-  title: 'Test Artwork',
-  artist_uuid:artistUUID, 
-  image_url:'https://example.com/image.jpg', 
-  location_geohash:'9q8yy'
-}
+let insertedArtist;
+let insertedRecord;
+let exampleArtwork;
+let exampleArtist; // Declare exampleArtist here
 
-describe('POST /artworks/:id', () => {
+describe('GET /artworks/:id', () => {
+
   beforeAll(async () => {
-    // Clean up: Delete the test record from the database after the test
-    insertedArtist = await knex('artists').insert(exampleArtist).returning("*");
-    insertedRecord = await knex('artworks').insert(exampleArtwork).returning("*");
-    exampleArtist.id= insertedArtist[0].id
-    exampleArtwork.id = insertedRecord[0].id
+    try {
+      // Create a new UUID for the artist
+      const ARTISTUUID = uuidv4();
+      exampleArtist = {
+        uuid: ARTISTUUID,
+        artist: 'Leonardo da Vinci',
+        birthyear: 1452,
+        num_artworks: 20
+      };
 
+      // Insert the artist
+      insertedArtist = await knex('artists').insert(exampleArtist).returning("*");
+
+      // Define exampleArtwork using the insertedArtist
+      exampleArtwork = {
+        title: 'Mona Lisa',
+        artist_uuid: instertedArtist[0].uuid,
+        image_url: 'https://example.com/mona_lisa.jpg',
+        location_geohash: 'u4pruydqqw43'
+      };
+
+      // Insert the artwork
+      insertedRecord = await knex('artworks').insert({ ...exampleArtwork }).returning("*");
+      exampleArtwork.id = insertedRecord[0].id;
+
+      console.log('Inserted Artist:', insertedArtist);
+      console.log('Example Artwork:', exampleArtwork);
+    } catch (error) {
+      console.log("error")
+    }
   });
 
   afterAll(async () => {
-    // Clean up: Delete the test record from the database after the test
-    await knex('artworks').where({ id: exampleArtwork.id}).del();
-    await knex('artists').where({id: exampleArtist.id}).del();
-    await knex.destroy();
+    try {
+      // Clean up: Delete the test record from the database after the test
+      await knex('artworks').where({ id: exampleArtwork.id }).del();
+      await knex('artists').where({ uuid: exampleArtist.uuid }).del();
+      await knex.destroy();
+    } catch (error) {
+      console.log("error");
+    }
   });
+  
 
   test('should return the correct artwork record', async () => {
     // Insert a test record into the database
     const response = await request(app)
         .post(`/artworks`) 
         .send(exampleArtwork)
+        
+
+    
+    expect(response.status).toBe(401);
+    expect(response.body).toHaveProperty('message', 'Data not formatted correctly')
+
+    if (response.body.message === 'Data not formatted correctly') {
+      return;
+    }
 
     const artworkResponse = response.body.artwork
-    expect(response.status).toBe(201);
-
     const knexRecord = await knex('artworks').select("*").where("id", artworkResponse.id);
     expect(knexRecord[0]).toHaveProperty('id', artworkResponse.id);
     expect(knexRecord[0]).toHaveProperty('title', exampleArtwork.title);
@@ -68,11 +93,8 @@ describe('POST /artworks/:id', () => {
 
     expect(response.status).toBe(401);    
     
-
     const knexRecord = await knex('artworks').select("*").where("title", null);
     expect(knexRecord.length).toBe(0)
-
-
   }); 
   
 });

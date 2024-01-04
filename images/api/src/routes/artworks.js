@@ -1,33 +1,43 @@
 const express = require('express');
 const router = express.Router();
 const bodyParser = require('body-parser');
-const { checkArtworkTitle} = require("../helpers/endpointHelpers.js")
 const knex = require('knex');
+const { v4: uuidv4 } = require('uuid');
+
+const { checkArtworkTitle } = require('../helpers/endpointHelpers.js');
+const { checkArtworkImage } = require('../helpers/artworkImageEndpointHelpers.js');
+const { checkArtworkLocation } = require('../helpers/artworkLocationEndpointHelpers.js');
+
 const knexConfig = require('./../db/knexfile');
 
 const db = knex(knexConfig.development);
 
 
 // Create a new artwork
-router.post('/', (req, res) => {
-  const { title, artist_uuid, image_url, location_geohash } = req.body;
+router.post('/', async (req, res) => {
+  const { title, image_url, location_geohash } = req.body;
+  const artist_uuid = uuidv4();
 
-  if (checkArtworkTitle(title)) {
-    db('artworks')
-      .insert({ title, artist_uuid, image_url, location_geohash })
-      .returning('*') // Use returning('*') to get the inserted data
-      .then((insertedData) => {
-        const insertedArtwork = insertedData[0];
-        res.status(201).json({
-          message: 'Artwork created successfully',
-          artwork: insertedArtwork,
-        });
-      })
-      .catch((error) => res.status(500).json({ error }));
+  if (checkArtworkTitle(title) && checkArtworkImage(image_url) && checkArtworkLocation(location_geohash)) {
+    try {
+      const insertedData = await db('artworks')
+        .insert({ title, artist_uuid, image_url, location_geohash })
+        .returning('*');
+
+      const insertedArtwork = insertedData[0];
+      res.status(201).json({
+        message: 'Artwork created successfully',
+        artwork: insertedArtwork,
+      });
+    } catch (error) {
+      console.log(error)
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
   } else {
-    res.status(401).send({ message: 'Name not formatted correctly' });
+    res.status(401).send({ message: 'Data not formatted correctly' });
   }
 });
+
 
 
 // Retrieve all artworks

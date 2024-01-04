@@ -1,17 +1,15 @@
 const{checkArtworkTitle} = require("../../helpers/endpointHelpers.js")
-
-// table.increments('id').primary();
-// table.string('title')/* .notNullable() */;
-// table.string('artist_uuid')/* .notNullable() */;
-// table.string('image_url')/* .notNullable() */;
-// table.string('location_geohash').notNullable();
  
 test("check title", () => {
-
+    //check for empty input
     expect(checkArtworkTitle("")).toBe(false);
+    //check for a null input
     expect(checkArtworkTitle(null)).toBe(false);
+    //check for a short name
     expect(checkArtworkTitle("i")).toBe(false);
+    //check for a numeric name
     expect(checkArtworkTitle(1)).toBe(false);
+    //check for an insane long name
     expect(checkArtworkTitle("pijdbzkjbepjsbdmbupicvbdpijdbphxkjcvLMDIhcxmlknvcmkmkjvbmkj")).toBe(false);
 
     expect(checkArtworkTitle("mona lisa")).toBe(true);
