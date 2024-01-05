@@ -136,7 +136,7 @@ describe('UPDATE /artworks/:id', () => {
     expect(response.status).toBe(404);
   });
 
-  it('should return 401 when updating with an invalid ID', async () => {
+  test('should return 401 when updating with an invalid ID', async () => {
     const invalidId = 'invalid_id'; // Invalid ID
 
     const response = await request(app)
