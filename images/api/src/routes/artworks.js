@@ -68,25 +68,53 @@ router.get('/:id', async (req, res) => {
     }); 
 
 // Update an artwork
-router.put('/:id', (req, res) => {
+router.put('/:id', async(req, res) => {
   const { title, artist_uuid, image_url, location } = req.body;
   const id = req.params.id;
 
-  db('artworks')
-    .where({ id })
-    .update({ title, artist_uuid, image_url, location })
-    .then(() => res.send('Artwork updated successfully'))
-    .catch((error) => res.status(500).json({ error }));
+  if (!Number.isInteger(Number(id))) {
+    return res.status(401).send({ message: 'Invalid artwork ID' });
+  }
+
+  try {
+    const existingArtwork = await db('artworks').where({ id }).first();
+
+    if (!existingArtwork) {
+      return res.status(404).json({ error: 'Artwork not found' });
+    }
+
+    await db('artworks')
+      .where({ id })
+      .update({ title, artist_uuid, image_url, location });
+
+    res.status(200).send('Artwork updated successfully');
+  } catch (error) {
+    console.log('Error updating artwork:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
 });
 
 // Delete an artwork
 router.delete('/:id', (req, res) => {
-  const id = req.params.id;
+  const artworkId = req.params.id;
+
+  if (isNaN(artworkId) || artworkId < 0 || artworkId >= 9999999) {
+    // Invalid ID provided
+    return res.status(401).json({ error: 'Invalid ID provided' });
+  }
 
   db('artworks')
-    .where({ id })
+    .where({ id: artworkId }) // Use artworkId here
     .del()
-    .then(() => res.send('Artwork deleted successfully'))
+    .then((deletedCount) => {
+      if (deletedCount > 0) {
+        // Artwork deleted successfully
+        res.status(204).send();
+      } else {
+        // Artwork not found, return 404
+        res.status(404).json({ error: 'Artwork not found' });
+      }
+    })
     .catch((error) => res.status(500).json({ error }));
 });
 

@@ -10,7 +10,7 @@ let insertedRecord;
 let exampleArtwork;
 let exampleArtist; // Declare exampleArtist here
 
-describe('GET /artworks/:id', () => {
+describe('POST /artworks/:id', () => {
 
   beforeAll(async () => {
     try {
@@ -41,7 +41,7 @@ describe('GET /artworks/:id', () => {
       console.log('Inserted Artist:', insertedArtist);
       console.log('Example Artwork:', exampleArtwork);
     } catch (error) {
-      console.log("error")
+      console.log(error);
     }
   });
 
@@ -49,10 +49,10 @@ describe('GET /artworks/:id', () => {
     try {
       // Clean up: Delete the test record from the database after the test
       await knex('artworks').where({ id: exampleArtwork.id }).del();
-      await knex('artists').where({ uuid: exampleArtist.uuid }).del();
+      await knex('artists').where({ id: exampleArtist.id }).del();
       await knex.destroy();
     } catch (error) {
-      console.log("error");
+      console.log(error);
     }
   });
   
