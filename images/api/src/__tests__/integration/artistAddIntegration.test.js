@@ -10,7 +10,7 @@ let insertedRecord;
 let exampleArtwork;
 let exampleArtist; // Declare exampleArtist here
 
-describe('POST /artworks/:id', () => {
+describe('POST /artists/:id', () => {
 
   beforeAll(async () => {
     try {
@@ -55,46 +55,35 @@ describe('POST /artworks/:id', () => {
       console.log(error);
     }
   });
+
   
+  test('should get all artists', async () => {
+    const response = await request(app).get('/artists');
 
-  test('should return the correct artwork record', async () => {
-    // Insert a test record into the database
-    const response = await request(app)
-        .post(`/artworks`) 
-        .send(exampleArtwork)
-        
+    expect(response.status).toBe(200);
+    expect(response.body.length).toBeGreaterThanOrEqual(1);
+  });
 
-    
+  test('should get a single artist by ID', async () => {
+    const response = await request(app).get(`/artists/${insertedArtist[0].id}`);
+
+    expect(response.status).toBe(200);
+    expect(response.body.id).toBe(insertedArtist[0].id);
+    expect(response.body.artist).toBe(insertedArtist[0].artist);
+  });
+
+  test('should return 404 for non-existent artist ID', async () => {
+    const response = await request(app).get('/artists/9999999');
+
+    expect(response.status).toBe(404);
+    expect(response.body.error).toBe('Artist not found');
+  });
+
+  test('should return 401 for negative artist ID', async () => {
+    const response = await request(app).get('/artists/-1');
+
     expect(response.status).toBe(401);
-    expect(response.body).toHaveProperty('message', 'Data not formatted correctly')
+    expect(response.body.message).toBe('negative id provided');
+  });
 
-    if (response.body.message === 'Data not formatted correctly') {
-      return;
-    }
-
-    const artworkResponse = response.body.artwork
-    const knexRecord = await knex('artworks').select("*").where("id", artworkResponse.id);
-    expect(knexRecord[0]).toHaveProperty('id', artworkResponse.id);
-    expect(knexRecord[0]).toHaveProperty('title', exampleArtwork.title);
-    expect(knexRecord[0]).toHaveProperty('artist_uuid', exampleArtwork.artist_uuid);
-    expect(knexRecord[0]).toHaveProperty('image_url', exampleArtwork.image_url);
-    expect(knexRecord[0]).toHaveProperty('location_geohash', exampleArtwork.location_geohash);
-
-  });  
-
-  test('should return 401, wrong artwork record', async () => {
-    // Insert a test record into the database
-    const response = await request(app)
-        .post(`/artworks`) 
-        .send({
-          ...exampleArtwork,
-          title: null
-        });
-
-    expect(response.status).toBe(401);    
-    
-    const knexRecord = await knex('artworks').select("*").where("title", null);
-    expect(knexRecord.length).toBe(0)
-  }); 
-  
 });

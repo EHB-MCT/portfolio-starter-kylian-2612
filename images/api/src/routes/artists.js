@@ -50,9 +50,19 @@ router.get('/:id', async (req, res) => {
 });
 
 // Update an artist
-router.put('/:id', (req, res) => {
+router.put('/:id', async(req, res) => {
   const { artist, uuid, birthyear, num_artworks } = req.body;
   const id = req.params.id;
+
+  if (id < 0) {
+    return res.status(401).json({ message: 'negative id provided' });
+  }
+
+  // Check if the artist exists
+  const existingArtist = await db('artists').where({ id }).first();
+  if (!existingArtist) {
+      return res.status(404).json({ error: 'Artist not found' });
+  }
 
   db('artists')
     .where({ id })
@@ -61,15 +71,29 @@ router.put('/:id', (req, res) => {
     .catch((error) => res.status(500).json({ error }));
 });
 
+
 // Delete an artist
-router.delete('/:id', (req, res) => {
+router.delete('/:id', async (req, res) => {
   const id = req.params.id;
 
-  db('artists')
-    .where({ id })
-    .del()
-    .then(() => res.send('Artist deleted successfully'))
-    .catch((error) => res.status(500).json({ error }));
+  // Check if the ID is valid
+  if (id < 0) {
+    return res.status(401).json({ error: 'Invalid ID provided' });
+  }
+
+  try {
+    const artist = await db('artists').where({ id }).first();
+
+    if (!artist) {
+      return res.status(404).json({ error: 'Artist not found' });
+    }
+
+    await db('artists').where({ id }).del();
+    res.send('Artist deleted successfully');
+  } catch (error) {
+    res.status(500).json({ error });
+  }
 });
+
 
 module.exports = router;
