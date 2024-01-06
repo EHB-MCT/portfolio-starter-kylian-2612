@@ -38,8 +38,6 @@ describe('UPDATE /artists/:id', () => {
       insertedRecord = await knex('artworks').insert({ ...exampleArtwork }).returning("*");
       exampleArtwork.id = insertedRecord[0].id;
 
-      console.log('Inserted Artist:', insertedArtist);
-      console.log('Example Artwork:', exampleArtwork);
     } catch (error) {
       console.log("error")
     }

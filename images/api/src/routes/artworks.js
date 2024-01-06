@@ -15,30 +15,30 @@ const db = knex(knexConfig.development);
 
 // Create a new artwork
 router.post('/', async (req, res) => {
-  const { title, image_url, location_geohash } = req.body;
-  const artist_uuid = uuidv4();
+  try {
+    const { title, image_url, location_geohash } = req.body;
 
-  if (checkArtworkTitle(title) && checkArtworkImage(image_url) && checkArtworkLocation(location_geohash)) {
-    try {
-      const insertedData = await db('artworks')
-        .insert({ title, artist_uuid, image_url, location_geohash })
-        .returning('*');
+    // Generate a UUID for the artist
+    const artist_uuid = uuidv4();
 
-      const insertedArtwork = insertedData[0];
-      res.status(201).json({
-        message: 'Artwork created successfully',
-        artwork: insertedArtwork,
-      });
-    } catch (error) {
-      console.log(error)
-      res.status(500).json({ error: 'Internal Server Error' });
-    }
-  } else {
-    res.status(401).send({ message: 'Data not formatted correctly' });
+    // Insert the artist into the "artists" table
+    await db('artists').insert({ uuid: artist_uuid });
+
+    // Insert the artwork into the "artworks" table
+    const insertedData = await db('artworks')
+      .insert({ title, artist_uuid, image_url, location_geohash })
+      .returning(['id', 'title', 'artist_uuid', 'image_url', 'location_geohash']);
+
+    const insertedArtwork = insertedData[0];
+
+    res.status(200).json({
+      message: 'Artwork created successfully',
+      artwork: insertedArtwork,
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 });
-
-
 
 // Retrieve all artworks
 router.get('/', (req, res) => {
