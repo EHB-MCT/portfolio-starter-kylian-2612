@@ -1,40 +1,39 @@
 // artworks.test.js
 const request = require('supertest');
 const app = require('../../app.js');
-const { v4: uuidv4 } = require("uuid");
+const { v4: uuidv4 } = require('uuid');
 const knexfile = require('../../db/knexfile.js');
-const knex = require("knex")(knexfile.development);
+const knex = require('knex')(knexfile.development);
 
 let insertedRecord;
 let exampleArtwork;
-let exampleArtist; // Declare exampleArtist here
+let exampleArtist;
 
 describe('POST /artists/:id', () => {
-
   beforeAll(async () => {
-      // Create a new UUID for the artist
-      const ARTISTUUID = uuidv4();
-      exampleArtist = {
-        uuid: ARTISTUUID,
-        artist: 'Leonardo da Vinci',
-        birthyear: 1452,
-        num_artworks: 20
-      };
+    // Create a new UUID for the artist
+    const ARTISTUUID = uuidv4();
+    exampleArtist = {
+      uuid: ARTISTUUID,
+      artist: 'Leonardo da Vinci',
+      birthyear: 1452,
+      num_artworks: 20,
+    };
+    
+    // Insert the artist
+    await knex('artists').insert({ ...exampleArtist });
 
-      // Insert the artist
-      await knex('artists').insert({ ...exampleArtist });
+    // Define exampleArtwork using the insertedArtist
+    exampleArtwork = {
+      title: 'Mona Lisa',
+      artist_uuid: exampleArtist.uuid,
+      image_url: 'https://example.com/mona_lisa.jpg',
+      location_geohash: 'u4pruydqqw43',
+    };
 
-      // Define exampleArtwork using the insertedArtist
-      exampleArtwork = {
-        title: 'Mona Lisa',
-        artist_uuid: exampleArtist.uuid,
-        image_url: 'https://example.com/mona_lisa.jpg',
-        location_geohash: 'u4pruydqqw43'
-      };
-
-      // Insert the artwork
-      insertedRecord = await knex('artworks').insert({ ...exampleArtwork }).returning("*");
-      exampleArtwork.id = insertedRecord[0].id;
+    // Insert the artwork
+    insertedRecord = await knex('artworks').insert({ ...exampleArtwork }).returning('*');
+    exampleArtwork.id = insertedRecord[0].id;
   });
 
   afterAll(async () => {
@@ -51,7 +50,7 @@ describe('POST /artists/:id', () => {
       .send({
         artist: 'Test Artist',
         uuid: uuidv4(),
-        birthyear: 2000,
+        birthyear: 8000,
         num_artworks: 5,
       });
 
@@ -59,6 +58,8 @@ describe('POST /artists/:id', () => {
     expect(response.body.message).toBe('Artist created successfully');
     expect(response.body.artist).toHaveProperty('id');
     expect(response.body.artist.artist).toBe('Test Artist');
+
+    await request(app).delete(`/artists/${response.body.artist.id}`);
   });
 
   test('should handle errors when creating an artist with invalid data', async () => {
@@ -78,7 +79,7 @@ describe('POST /artists/:id', () => {
       .send({
         artist: '',
         uuid: uuidv4(),
-        birthyear: 2000,
+        birthyear: 5000,
         num_artworks: 5,
       });
 
@@ -93,7 +94,7 @@ describe('POST /artists/:id', () => {
       .send({
         artist: null, // Invalid name
         uuid: uuidv4(),
-        birthyear: 2000,
+        birthyear: 6000,
         num_artworks: 5,
       });
 
@@ -108,7 +109,7 @@ describe('POST /artists/:id', () => {
       .send({
         // Missing 'artist' property
         uuid: uuidv4(),
-        birthyear: 2000,
+        birthyear: 4000,
         num_artworks: 5,
       });
 
@@ -116,5 +117,4 @@ describe('POST /artists/:id', () => {
     expect(response.body).toHaveProperty('error');
     expect(response.body.error).toBe('Invalid data. Missing required fields.');
   });
-
 });

@@ -7,10 +7,9 @@ const knex = require("knex")(knexfile.development);
 let insertedArtist;
 let insertedRecord;
 let exampleArtwork;
-let exampleArtist; // Declare exampleArtist here
+let exampleArtist;
 
 describe('DELETE /artworks/:id', () => {
-
   beforeAll(async () => {
     try {
       // Create a new UUID for the artist
@@ -50,8 +49,7 @@ describe('DELETE /artworks/:id', () => {
 
   test('should delete the artwork when a valid ID is provided', async () => {
     // Send a DELETE request to the endpoint with the correct ID
-    const response = await request(app)
-      .delete(`/artworks/${exampleArtwork.id}`);
+    const response = await request(app).delete(`/artworks/${exampleArtwork.id}`);
     
     // Check the response status
     expect(response.status).toBe(204);
@@ -73,8 +71,7 @@ describe('DELETE /artworks/:id', () => {
 
   test('should return 401 when trying to delete with an invalid ID', async () => {
     // Send a DELETE request to the endpoint with an invalid ID
-    const response = await request(app)
-      .delete(`/artworks/invalid_id`);
+    const response = await request(app).delete(`/artworks/invalid_id`);
     
     // Check the response status
     expect(response.status).toBe(401);

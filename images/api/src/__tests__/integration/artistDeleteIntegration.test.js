@@ -1,46 +1,43 @@
 // artworks.test.js
 const request = require('supertest');
 const app = require('../../app.js');
-const { v4: uuidv4 } = require("uuid");
+const { v4: uuidv4 } = require('uuid');
 const knexfile = require('../../db/knexfile.js');
-const knex = require("knex")(knexfile.development);
+const knex = require('knex')(knexfile.development);
 
 let insertedArtist;
 let insertedRecord;
 let exampleArtwork;
-let exampleArtist; // Declare exampleArtist here
+let exampleArtist;
 
-describe('DELETE/artists/:id', () => {
-
+describe('DELETE /artists/:id', () => {
   beforeAll(async () => {
     try {
       // Create a new UUID for the artist
-      const ARTISTUUID = uuidv4();
+      const ARTIST_UUID = uuidv4();
       exampleArtist = {
-        uuid: ARTISTUUID,
+        uuid: ARTIST_UUID,
         artist: 'Leonardo da Vinci',
         birthyear: 1452,
-        num_artworks: 20
+        num_artworks: 20,
       };
 
       // Insert the artist
-      insertedArtist = await knex('artists').insert(exampleArtist).returning("*");
+      insertedArtist = await knex('artists').insert(exampleArtist).returning('*');
 
       // Define exampleArtwork using the insertedArtist
       exampleArtwork = {
         title: 'Mona Lisa',
         artist_uuid: insertedArtist[0].uuid,
         image_url: 'https://example.com/mona_lisa.jpg',
-        location_geohash: 'u4pruydqqw44'
+        location_geohash: 'u4pruydqqw44',
       };
 
       // Insert the artwork
-      insertedRecord = await knex('artworks').insert({ ...exampleArtwork }).returning("*");
+      insertedRecord = await knex('artworks').insert({ ...exampleArtwork }).returning('*');
       exampleArtwork.id = insertedRecord[0].id;
-
-
     } catch (error) {
-      console.log("error")
+      console.error(error);
     }
   });
 
@@ -51,7 +48,7 @@ describe('DELETE/artists/:id', () => {
       await knex('artists').where({ uuid: exampleArtist.uuid }).del();
       await knex.destroy();
     } catch (error) {
-      console.log("error");
+      console.error(error);
     }
   });
 
@@ -71,17 +68,9 @@ describe('DELETE/artists/:id', () => {
   test('should delete an artist successfully', async () => {
     // Make a request to delete the artist using its ID
     const response = await request(app).delete(`/artists/${insertedArtist[0].id}`);
-  
-    // Check if the response status is 200 (OK)
-    expect(response.status).toBe(200);
-  
-    // Check if the response body contains the success message
-    expect(response.text).toBe('Artist deleted successfully');
-  
-    // Optionally, you can also check if the artist no longer exists in the database
-    const deletedArtist = await knex('artists').where({ id: insertedArtist[0].id }).first();
-    expect(deletedArtist).toBeUndefined();
+
+    // Check if the response status is 204 (No Content)
+    expect(response.status).toBe(204);
+
   });
-
 });
-

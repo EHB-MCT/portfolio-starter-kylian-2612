@@ -1,4 +1,4 @@
-const {checkArtworkImage} = require("../../helpers/artworkImageEndpointHelpers.js");
+const {checkArtworkImage} = require("../../helpers/artworkEndpointHelpers");
 
 test('check image', () =>{
     //check for empty input

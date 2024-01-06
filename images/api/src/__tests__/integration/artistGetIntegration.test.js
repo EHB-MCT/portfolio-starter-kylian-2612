@@ -1,17 +1,16 @@
 // artworks.test.js
 const request = require('supertest');
 const app = require('../../app.js');
-const { v4: uuidv4 } = require("uuid");
+const { v4: uuidv4 } = require('uuid');
 const knexfile = require('../../db/knexfile.js');
-const knex = require("knex")(knexfile.development);
+const knex = require('knex')(knexfile.development);
 
 let insertedArtist;
 let insertedRecord;
 let exampleArtwork;
-let exampleArtist; // Declare exampleArtist here
+let exampleArtist;
 
-describe('GET/artists/:id', () => {
-
+describe('GET /artists/:id', () => {
   beforeAll(async () => {
     try {
       // Create a new UUID for the artist
@@ -20,27 +19,25 @@ describe('GET/artists/:id', () => {
         uuid: ARTISTUUID,
         artist: 'Leonardo da Vinci',
         birthyear: 1452,
-        num_artworks: 20
+        num_artworks: 20,
       };
 
       // Insert the artist
-      insertedArtist = await knex('artists').insert(exampleArtist).returning("*");
+      insertedArtist = await knex('artists').insert(exampleArtist).returning('*');
 
       // Define exampleArtwork using the insertedArtist
       exampleArtwork = {
         title: 'Mona Lisa',
         artist_uuid: insertedArtist[0].uuid,
         image_url: 'https://example.com/mona_lisa.jpg',
-        location_geohash: 'u4pruydqqw44'
+        location_geohash: 'u4pruydqqw44',
       };
 
       // Insert the artwork
-      insertedRecord = await knex('artworks').insert({ ...exampleArtwork }).returning("*");
+      insertedRecord = await knex('artworks').insert({ ...exampleArtwork }).returning('*');
       exampleArtwork.id = insertedRecord[0].id;
-
-
     } catch (error) {
-      console.log("error")
+      console.error(error);
     }
   });
 
@@ -51,40 +48,38 @@ describe('GET/artists/:id', () => {
       await knex('artists').where({ uuid: exampleArtist.uuid }).del();
       await knex.destroy();
     } catch (error) {
-      console.log("error");
+      console.error(error);
     }
   });
 
-  it('should get all artists', async () => {
+  test('should get all artists', async () => {
     const response = await request(app).get('/artists');
-  
-    expect(response.status).toBe(200);
-    const leonardoArtist = response.body.find(artist => artist.artist === 'Leonardo da Vinci');
-    expect(leonardoArtist).toBeDefined(); // Expect 'Leonardo da Vinci' to be present
-  });  
 
-  it('should get a specific artist by ID', async () => {
+    expect(response.status).toBe(200);
+    const leonardoArtist = response.body.find((artist) => artist.artist === 'Leonardo da Vinci');
+    expect(leonardoArtist).toBeDefined(); // Expect 'Leonardo da Vinci' to be present
+  });
+
+  test('should get a specific artist by ID', async () => {
     const response = await request(app).get(`/artists/${insertedArtist[0].id}`);
-  
+
     expect(response.status).toBe(200);
     expect(response.body.artist).toBe('Leonardo da Vinci');
   });
 
-  it('should return an error for invalid artist ID', async () => {
+  test('should return an error for invalid artist ID', async () => {
     const invalidID = 999999; // Assuming this ID does not exist in your database
     const response = await request(app).get(`/artists/${invalidID}`);
-  
+
     expect(response.status).toBe(404);
     expect(response.body.error).toBe('Artist not found');
   });
 
-  it('should return an error for negative artist ID', async () => {
+  test('should return an error for negative artist ID', async () => {
     const negativeID = -1;
     const response = await request(app).get(`/artists/${negativeID}`);
-  
-    expect(response.status).toBe(401);
-    expect(response.body.message).toBe('negative id provided');
-  });
-  
-});
 
+    expect(response.status).toBe(401);
+    expect(response.body.message).toBe('Invalid or negative ID provided');
+  });
+});

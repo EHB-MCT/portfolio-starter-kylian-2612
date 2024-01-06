@@ -3,21 +3,16 @@ const router = express.Router();
 const bodyParser = require('body-parser');
 const knex = require('knex');
 const { v4: uuidv4 } = require('uuid');
-
-const { checkArtworkTitle } = require('../helpers/endpointHelpers.js');
-const { checkArtworkImage } = require('../helpers/artworkImageEndpointHelpers.js');
-const { checkArtworkLocation } = require('../helpers/artworkLocationEndpointHelpers.js');
-
+const { checkArtworkTitle, checkArtworkImage, checkArtworkLocation } = require('../helpers/artworkEndpointHelpers.js');
 const knexConfig = require('./../db/knexfile');
 
 const db = knex(knexConfig.development);
 
-
 // Create a new artwork
 router.post('/', async (req, res) => {
-  try {
-    const { title, image_url, location_geohash } = req.body;
+  const { title, image_url, location_geohash } = req.body;
 
+  if (checkArtworkTitle(title) && checkArtworkImage(image_url) && checkArtworkLocation(location_geohash)) {
     // Generate a UUID for the artist
     const artist_uuid = uuidv4();
 
@@ -35,40 +30,42 @@ router.post('/', async (req, res) => {
       message: 'Artwork created successfully',
       artwork: insertedArtwork,
     });
-  } catch (error) {
+  } else {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
 
 // Retrieve all artworks
 router.get('/', (req, res) => {
-    db('artworks')
-      .select()
-      .then((artworks) => res.json(artworks))
-      .catch((error) => res.status(500).json({ error }));
-  });
-  
+  db('artworks')
+    .select()
+    .then((artworks) => res.json(artworks))
+    .catch((error) => res.status(500).json({ error }));
+});
+
 // Read One
 router.get('/:id', async (req, res) => {
-    const id = parseInt(req.params.id);  
-    if (id >= 0 && typeof(id) == 'number' && id < 99999999){
-      try {
-        const artwork = await db('artworks').where({ id }).first();
-        if (!artwork) {
-          return res.status(404).json({ error: 'Artwork not found' });
-        }
-        res.json(artwork);
-      }catch (err) {
-        res.status(500).json({ error: 'Error retrieving artwork' });
-      }
-    } else{
-      res.status(401).send({ message: "negative id provided"});
-    }
+  const id = parseInt(req.params.id);
 
-    }); 
+  if (id >= 0 && typeof id === 'number' && id < 99999999) {
+    try {
+      const artwork = await db('artworks').where({ id }).first();
+
+      if (!artwork) {
+        return res.status(404).json({ error: 'Artwork not found' });
+      }
+
+      res.json(artwork);
+    } catch (err) {
+      res.status(500).json({ error: 'Error retrieving artwork' });
+    }
+  } else {
+    res.status(401).send({ message: 'Negative ID provided' });
+  }
+});
 
 // Update an artwork
-router.put('/:id', async(req, res) => {
+router.put('/:id', async (req, res) => {
   const { title, artist_uuid, image_url, location } = req.body;
   const id = req.params.id;
 
@@ -104,7 +101,7 @@ router.delete('/:id', (req, res) => {
   }
 
   db('artworks')
-    .where({ id: artworkId }) // Use artworkId here
+    .where({ id: artworkId })
     .del()
     .then((deletedCount) => {
       if (deletedCount > 0) {
