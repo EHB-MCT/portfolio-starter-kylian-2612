@@ -6,7 +6,6 @@ exports.up = function(knex) {
     return knex.schema.alterTable('artists', function (table) {
         table.unique(['uuid']);
       });
-
 };
 
 /**

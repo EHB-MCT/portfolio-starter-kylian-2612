@@ -9,17 +9,25 @@ const db = knex(knexConfig.development);
 router.post('/', (req, res) => {
   const { artist, uuid, birthyear, num_artworks } = req.body;
 
+    // Check if required fields are present
+    if (!artist || !uuid || !birthyear || !num_artworks) {
+      return res.status(400).json({ error: 'Invalid data. Missing required fields.' });
+    }
+
   db('artists')
     .insert({ artist, uuid, birthyear, num_artworks })
     .returning('*')
     .then((insertedData) => {
       const insertedArtist = insertedData[0];
-      res.status(201).json({
+      res.status(200).json({
         message: 'Artist created successfully',
         artist: insertedArtist,
       });
     })
-    .catch((error) => res.status(500).json({ error }));
+    .catch((error) => {
+      console.error('Error:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    });
 });
 
 // Retrieve all artists
@@ -34,7 +42,7 @@ router.get('/', (req, res) => {
 router.get('/:id', async (req, res) => {
   const id = parseInt(req.params.id);
 
-  if (id >= 0 && typeof (id) == 'number' && id < 99999999) {
+  if (id >= 0 && typeof id === 'number' && id < 99999999) {
     try {
       const artist = await db('artists').where({ id }).first();
       if (!artist) {
@@ -45,14 +53,16 @@ router.get('/:id', async (req, res) => {
       res.status(500).json({ error: 'Error retrieving artist' });
     }
   } else {
-    res.status(401).send({ message: "negative id provided" });
+    res.status(401).json({ message: 'negative id provided' });
   }
 });
-
 // Update an artist
 router.put('/:id', async(req, res) => {
   const { artist, uuid, birthyear, num_artworks } = req.body;
   const id = req.params.id;
+  if (!Number.isInteger(Number(id))) {
+    return res.status(401).json({ message: 'invalid id provided' });
+  }
 
   if (id < 0) {
     return res.status(401).json({ message: 'negative id provided' });

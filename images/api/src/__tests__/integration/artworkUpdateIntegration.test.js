@@ -38,10 +38,8 @@ describe('UPDATE /artworks/:id', () => {
       insertedRecord = await knex('artworks').insert({ ...exampleArtwork }).returning("*");
       exampleArtwork.id = insertedRecord[0].id;
 
-      console.log('Inserted Artist:', insertedArtist);
-      console.log('Example Artwork:', exampleArtwork);
     } catch (error) {
-      console.log("error")
+      console.log(error)
     }
   });
 
@@ -52,7 +50,7 @@ describe('UPDATE /artworks/:id', () => {
       await knex('artists').where({ uuid: exampleArtist.uuid }).del();
       await knex.destroy();
     } catch (error) {
-      console.log("error");
+      console.log(error);
     }
   });
   
@@ -90,7 +88,6 @@ describe('UPDATE /artworks/:id', () => {
   
     const knexRecord = await knex('artworks').select('*').where('id', updatedArtwork.id);
     expect(knexRecord.length).toBe(1);
-    console.log("updatedArtwork", knexRecord[0])
   
     const updatedRecord = knexRecord[0];
     expect(updatedRecord.title).toBe(updatedArtwork.title);
