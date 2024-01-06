@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const knex = require('knex');
-const knexConfig = require('./../db/knexfile');
+const knexConfig = require('../db/knexfile');
+const { checkArtistName, checkArtistBirthyear, checkArtistNumArtworks } = require('../helpers/artistEndpointHelpers');
 
 const db = knex(knexConfig.development);
 
@@ -9,25 +10,25 @@ const db = knex(knexConfig.development);
 router.post('/', (req, res) => {
   const { artist, uuid, birthyear, num_artworks } = req.body;
 
-    // Check if required fields are present
-    if (!artist || !uuid || !birthyear || !num_artworks) {
-      return res.status(400).json({ error: 'Invalid data. Missing required fields.' });
-    }
-
-  db('artists')
-    .insert({ artist, uuid, birthyear, num_artworks })
-    .returning('*')
-    .then((insertedData) => {
-      const insertedArtist = insertedData[0];
-      res.status(200).json({
-        message: 'Artist created successfully',
-        artist: insertedArtist,
+  // Check if required fields are present
+  if (checkArtistName(artist) && checkArtistBirthyear(birthyear) && checkArtistNumArtworks(num_artworks)) {
+    db('artists')
+      .insert({ artist, uuid, birthyear, num_artworks })
+      .returning('*')
+      .then((insertedData) => {
+        const insertedArtist = insertedData[0];
+        res.status(200).json({
+          message: 'Artist created successfully',
+          artist: insertedArtist,
+        });
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
       });
-    })
-    .catch((error) => {
-      console.error('Error:', error);
-      res.status(500).json({ error: 'Internal Server Error' });
-    });
+  } else {
+    res.status(400).json({ error: 'Invalid data. Missing required fields.' });
+  }
 });
 
 // Retrieve all artists
@@ -53,25 +54,23 @@ router.get('/:id', async (req, res) => {
       res.status(500).json({ error: 'Error retrieving artist' });
     }
   } else {
-    res.status(401).json({ message: 'negative id provided' });
+    res.status(401).json({ message: 'Invalid or negative ID provided' });
   }
 });
+
 // Update an artist
-router.put('/:id', async(req, res) => {
+router.put('/:id', async (req, res) => {
   const { artist, uuid, birthyear, num_artworks } = req.body;
   const id = req.params.id;
-  if (!Number.isInteger(Number(id))) {
-    return res.status(401).json({ message: 'invalid id provided' });
-  }
 
-  if (id < 0) {
-    return res.status(401).json({ message: 'negative id provided' });
+  if (!Number.isInteger(Number(id)) || id < 0) {
+    return res.status(401).json({ message: 'Invalid or negative ID provided' });
   }
 
   // Check if the artist exists
   const existingArtist = await db('artists').where({ id }).first();
   if (!existingArtist) {
-      return res.status(404).json({ error: 'Artist not found' });
+    return res.status(404).json({ error: 'Artist not found' });
   }
 
   db('artists')
@@ -80,7 +79,6 @@ router.put('/:id', async(req, res) => {
     .then(() => res.send('Artist updated successfully'))
     .catch((error) => res.status(500).json({ error }));
 });
-
 
 // Delete an artist
 router.delete('/:id', async (req, res) => {
@@ -98,12 +96,10 @@ router.delete('/:id', async (req, res) => {
       return res.status(404).json({ error: 'Artist not found' });
     }
 
-    await db('artists').where({ id }).del();
-    res.send('Artist deleted successfully');
+    res.status(204).send();
   } catch (error) {
-    res.status(500).json({ error });
+    res.status(500).json({ error: 'An error occurred during this process' });
   }
 });
-
 
 module.exports = router;

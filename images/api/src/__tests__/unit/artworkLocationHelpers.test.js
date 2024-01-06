@@ -1,4 +1,4 @@
-const { checkArtworkLocation } = require("../../helpers/artworkLocationEndpointHelpers.js");
+const { checkArtworkLocation } = require("../../helpers/artworkEndpointHelpers");
 
 // Test for a specific case (e.g., valid)
 test('check valid location geohash', () => {

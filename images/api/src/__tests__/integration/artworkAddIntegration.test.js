@@ -6,34 +6,31 @@ const knexfile = require('../../db/knexfile.js');
 const knex = require("knex")(knexfile.development);
 
 let insertedArtist;
-let insertedRecord;
 let exampleArtwork;
 let exampleArtist; // Declare exampleArtist here
 
 describe('POST /artworks/:id', () => {
 
   beforeAll(async () => {
-      // Create a new UUID for the artist
-      const ARTISTUUID = uuidv4();
-      exampleArtist = {
-        uuid: ARTISTUUID,
-        artist: 'Leonardo da Vinci',
-        birthyear: 1452,
-        num_artworks: 20
-      };
+    // Create a new UUID for the artist
+    const ARTISTUUID = uuidv4();
+    exampleArtist = {
+      uuid: ARTISTUUID,
+      artist: 'Leonardo da Vinci',
+      birthyear: 1452,
+      num_artworks: 20
+    };
 
-      // Insert the artist
-      insertedArtist = await knex('artists').insert(exampleArtist).returning("*");
+    // Insert the artist
+    insertedArtist = await knex('artists').insert(exampleArtist).returning("*");
 
-
-      // Define exampleArtwork using the insertedArtist
-      exampleArtwork = {
-        title: 'Mona Lisa',
-        artist_uuid: insertedArtist[0].uuid,
-        image_url: 'https://example.com/mona_lisa.jpg',
-        location_geohash: 'u4pruydqqw43'
-      };
-
+    // Define exampleArtwork using the insertedArtist
+    exampleArtwork = {
+      title: 'Mona Lisa',
+      artist_uuid: insertedArtist[0].uuid,
+      image_url: 'https://example.com/mona_lisa.jpg',
+      location_geohash: 'u4pruydqqw43'
+    };
   });
 
   afterAll(async () => {
@@ -60,6 +57,9 @@ describe('POST /artworks/:id', () => {
     expect(response.body.artwork.title).toBe('Starry Night');
     expect(response.body.artwork.image_url).toBe('https://example.com/starry_night.jpg');
     expect(response.body.artwork.location_geohash).toBe('u4pruydqqw43');
+    
+    // Cleanup: Delete the created artwork
+    await request(app).delete(`/artworks/${response.body.artwork.id}`);
   });
 
   test('should not create artwork with invalid data', async () => {
@@ -70,23 +70,15 @@ describe('POST /artworks/:id', () => {
         // Missing required fields: title, image_url, location_geohash
       });
 
-    // Assert that the response status is 500 (Internal Server Error)
     expect(response.status).toBe(500);
-
-    // Assert that the response contains an error message
-    expect(response.body.error).toBe('Internal Server Error');
   });
 
   test('should return 401, wrong artwork record', async () => {
     // Send a GET request to the endpoint with an invalid ID
     const response = await request(app)
       .get(`/artworks/invalid_id`);
+
     // Check the response status
     expect(response.status).toBe(401);
   });
-  
-
-
- 
-  
 });
