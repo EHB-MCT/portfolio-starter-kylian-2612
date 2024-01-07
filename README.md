@@ -65,38 +65,38 @@ Ensure you have the following software installed:
 - **Description:** Retrieve a specific artwork by ID
 - **Access:** Public
 
-#### Request Parameters
+##### Request Parameters
 
 - `id` (number): The ID of the artwork.
 
-## Update Artwork by ID
+### Update Artwork by ID
 
 - **Route:** `PUT /api/artworks/:id`
 - **Description:** Update an artwork by ID
 - **Access:** Public
 
-#### Request Parameters
+##### Request Parameters
 
 - `id` (number): The ID of the artwork.
 
-#### Request Body
+##### Request Body
 
 - `title` (string): The updated title of the artwork.
 - `artist_uuid` (string): The updated UUID of the artist associated with the artwork.
 - `image_url` (string): The updated URL of the artwork image.
 - `location` (string): The updated location of the artwork.
 
-## Delete Artwork by ID
+### Delete Artwork by ID
 
 - **Route:** `DELETE /api/artworks/:id`
 - **Description:** Delete an artwork by ID
 - **Access:** Public
 
-#### Request Parameters
+##### Request Parameters
 
 - `id` (number): The ID of the artwork to be deleted.
 
-## Error Handling
+### Error Handling
 
 - If an invalid ID is provided, the API responds with a 401 status and an error message.
 - If an artwork is not found, the API responds with a 404 status and an error message.
