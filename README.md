@@ -18,6 +18,7 @@ Ensure you have the following software installed:
 - Docker Compose
 
 ## Clone the Repository
+
 1. Clone the repository using Git: 
    ```
    git clone https://github.com/EHB-MCT/portfolio-starter-kylian-2612.git
@@ -33,8 +34,17 @@ Ensure you have the following software installed:
 2. Run the following command:
 
    ```
-   docker-compose up --build
+   docker-compose -f .\docker-compose.prod.yml up
    ```
+#### Installation test environment
+
+1. Copy the `.env.template` file to `.env`
+2. Run the following command:
+
+   ```
+   docker-compose -f .\docker-compose.test.yml up
+   ```
+
 ## Status 
     
     The project is currently in development
