@@ -9,6 +9,9 @@ let insertedRecord;
 let exampleArtwork;
 let exampleArtist;
 
+/**
+ * Test suite for the POST /artists endpoint to create a new artist.
+ */
 describe('POST /artists/:id', () => {
   beforeAll(async () => {
     // Create a new UUID for the artist
@@ -44,6 +47,10 @@ describe('POST /artists/:id', () => {
     }
   });
 
+  /**
+   * @param {Object} response - The HTTP response object from the API call.
+   * Test case to verify the successful creation of a new artist.
+   */
   test('should create a new artist', async () => {
     const response = await request(app)
       .post('/artists')
@@ -59,9 +66,14 @@ describe('POST /artists/:id', () => {
     expect(response.body.artist).toHaveProperty('id');
     expect(response.body.artist.artist).toBe('Test Artist');
 
+    // Clean up: Delete the created test artist from the database
     await request(app).delete(`/artists/${response.body.artist.id}`);
   });
 
+  /**
+   * @param {Object} response - The HTTP response object from the API call.
+   * Test case to handle errors when creating an artist with invalid data.
+   */
   test('should handle errors when creating an artist with invalid data', async () => {
     const response = await request(app)
       .post('/artists')
@@ -73,6 +85,10 @@ describe('POST /artists/:id', () => {
     expect(response.body).toHaveProperty('error');
   });
 
+  /**
+   * @param {Object} response - The HTTP response object from the API call.
+   * Test case to handle errors when creating an artist with an empty name.
+   */
   test('should handle errors when creating an artist with an empty name', async () => {
     const response = await request(app)
       .post('/artists')
@@ -88,6 +104,10 @@ describe('POST /artists/:id', () => {
     expect(response.body.error).toBe('Invalid data. Missing required fields.');
   });
 
+  /**
+   * @param {Object} response - The HTTP response object from the API call.
+   * Test case to handle errors when creating an artist with an invalid name.
+   */
   test('should handle errors when creating an artist with an invalid name', async () => {
     const response = await request(app)
       .post('/artists')
@@ -103,6 +123,10 @@ describe('POST /artists/:id', () => {
     expect(response.body.error).toBe('Invalid data. Missing required fields.');
   });
 
+  /**
+   * @param {Object} response - The HTTP response object from the API call.
+   * Test case to handle errors when creating an artist with an empty property.
+   */
   test('should handle errors when creating an artist with an empty property', async () => {
     const response = await request(app)
       .post('/artists')

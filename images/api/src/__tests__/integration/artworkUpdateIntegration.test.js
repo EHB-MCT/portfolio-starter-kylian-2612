@@ -10,8 +10,14 @@ let insertedRecord;
 let exampleArtwork;
 let exampleArtist;
 
+/**
+ * @description Setup before running the tests
+ */
 describe('UPDATE /artworks/:id', () => {
 
+  /**
+   * @description Before all tests, insert an example artist and artwork into the database
+   */
   beforeAll(async () => {
     try {
       const ARTIST_UUID = uuidv4();
@@ -39,6 +45,9 @@ describe('UPDATE /artworks/:id', () => {
     }
   });
 
+  /**
+   * @description After all tests, clean up the database
+   */
   afterAll(async () => {
     try {
       await knex('artworks').where({ id: exampleArtwork.id }).del();
@@ -49,7 +58,18 @@ describe('UPDATE /artworks/:id', () => {
     }
   });
 
+  /**
+   * @description Test updating artwork with valid data
+   */
   test('should update the artwork when valid data is provided', async () => {
+    /**
+     * @type {Object} updatedArtwork - Updated artwork data
+     * @property {number} id - ID of the artwork to be updated
+     * @property {string} title - Updated title
+     * @property {string} artist_uuid - UUID of the artist associated with the artwork
+     * @property {string} image_url - Updated image URL
+     * @property {string} location_geohash - Updated location geohash
+     */
     const updatedArtwork = {
       id: exampleArtwork.id,
       title: 'Updated Mona Lisa',
@@ -58,6 +78,7 @@ describe('UPDATE /artworks/:id', () => {
       location_geohash: 'u4pruydqqw44',
     };
 
+    // Check if the artist exists, if not, create a new artist
     const artistExists = await knex('artists').where('uuid', updatedArtwork.artist_uuid).first();
 
     if (!artistExists) {
@@ -71,10 +92,12 @@ describe('UPDATE /artworks/:id', () => {
       await knex('artists').insert(newArtist);
     }
 
+    // Send a request to update the artwork
     const response = await request(app)
       .put(`/artworks/${exampleArtwork.id}`)
       .send(updatedArtwork);
 
+    // Assertions
     expect(response.status).toBe(200);
 
     const knexRecord = await knex('artworks').select('*').where('id', updatedArtwork.id);
@@ -86,7 +109,17 @@ describe('UPDATE /artworks/:id', () => {
     expect(updatedRecord.location_geohash).toBe('u4pruydqqw44');
   });
 
+  /**
+   * @description Test updating artwork with invalid data
+   */
   test('should return 200 when invalid data is provided', async () => {
+    /**
+     * @type {Object} invalidArtwork - Artwork data with invalid fields
+     * @property {string} title - Invalid title
+     * @property {string} artist_uuid - Invalid artist_uuid
+     * @property {string} image_url - Invalid image URL
+     * @property {string} location_geohash - Invalid location geohash
+     */
     const invalidArtwork = {
       title: '', // Invalid title
       artist_uuid: uuidv4(), // Invalid artist_uuid
@@ -94,6 +127,7 @@ describe('UPDATE /artworks/:id', () => {
       location_geohash: 'invalid_hash',
     };
 
+    // Create a valid artist to associate with the invalid artwork
     const validArtist = {
       uuid: invalidArtwork.artist_uuid,
       artist: 'Valid Artist',
@@ -103,30 +137,48 @@ describe('UPDATE /artworks/:id', () => {
 
     await knex('artists').insert(validArtist);
 
+    // Send a request to update the artwork with invalid data
     const response = await request(app)
       .put(`/artworks/${exampleArtwork.id}`)
       .send(invalidArtwork);
 
+    // Assertions
     expect(response.status).toBe(200);
   });
 
+  /**
+   * @description Test updating non-existing artwork
+   */
   test('should return 404 when updating non-existing artwork', async () => {
+    /**
+     * @type {number} nonExistingId - Non-existing artwork ID
+     */
     const nonExistingId = 999999; // Non-existing ID
 
+    // Send a request to update a non-existing artwork
     const response = await request(app)
       .put(`/artworks/${nonExistingId}`)
       .send({});
 
+    // Assertions
     expect(response.status).toBe(404);
   });
 
+  /**
+   * @description Test updating artwork with an invalid ID
+   */
   test('should return 401 when updating with an invalid ID', async () => {
+    /**
+     * @type {string} invalidId - Invalid artwork ID
+     */
     const invalidId = 'invalid_id'; // Invalid ID
 
+    // Send a request to update the artwork with an invalid ID
     const response = await request(app)
       .put(`/artworks/${invalidId}`)
       .send({});
 
+    // Assertions
     expect(response.status).toBe(401);
   });
 });

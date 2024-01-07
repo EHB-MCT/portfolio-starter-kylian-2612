@@ -10,6 +10,9 @@ let insertedRecord;
 let exampleArtwork;
 let exampleArtist; // Declare exampleArtist here
 
+/**
+ * @description Setup before running the tests
+ */
 describe('UPDATE /artists/:id', () => {
   beforeAll(async () => {
     try {
@@ -41,6 +44,9 @@ describe('UPDATE /artists/:id', () => {
     }
   });
 
+  /**
+   * @description Cleanup after running the tests
+   */
   afterAll(async () => {
     try {
       // Clean up: Delete the test record from the database after the test
@@ -52,7 +58,16 @@ describe('UPDATE /artists/:id', () => {
     }
   });
 
+  /**
+   * @description Test for updating an artist successfully
+   */
   test('should update an artist successfully', async () => {
+    /**
+     * @param {Object} updatedData - The updated data for the artist
+     * @param {string} updatedData.artist - The updated artist name
+     * @param {number} updatedData.birthyear - The updated birth year of the artist
+     * @param {number} updatedData.num_artworks - The updated number of artworks by the artist
+     */
     const updatedData = {
       artist: 'Updated Artist',
       birthyear: 1500,
@@ -73,8 +88,14 @@ describe('UPDATE /artists/:id', () => {
     expect(updatedArtist.num_artworks).toBe(updatedData.num_artworks);
   });
 
+  /**
+   * @description Test for returning 404 if artist ID is not found
+   */
   test('should return 404 if artist ID is not found', async () => {
-    const nonExistentId = 999999; // Assuming this ID doesn't exist in the database
+    /**
+     * @param {number} nonExistentId - ID that doesn't exist in the database
+     */
+    const nonExistentId = 999999;
 
     const response = await request(app)
       .put(`/artists/${nonExistentId}`)
@@ -84,7 +105,13 @@ describe('UPDATE /artists/:id', () => {
     expect(response.body.error).toBe('Artist not found');
   });
 
+  /**
+   * @description Test for returning 401 if negative ID is provided
+   */
   test('should return 401 if negative ID is provided', async () => {
+    /**
+     * @param {number} negativeId - Negative ID provided
+     */
     const negativeId = -1;
 
     const response = await request(app)
@@ -95,7 +122,14 @@ describe('UPDATE /artists/:id', () => {
     expect(response.body.message).toBe('Invalid or negative ID provided');
   });
 
+  /**
+   * @description Test for updating the artist with partial data
+   */
   test('should update the artist with partial data', async () => {
+    /**
+     * @param {Object} partialData - Partial data to update the artist
+     * @param {number} partialData.num_artworks - The updated number of artworks by the artist
+     */
     const partialData = {
       num_artworks: 30,
     };

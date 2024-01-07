@@ -8,7 +8,15 @@ const knexConfig = require('./../db/knexfile');
 
 const db = knex(knexConfig.development);
 
-// Create a new artwork
+/**
+ * @route   POST /api/artworks
+ * @desc    Create a new artwork
+ * @access  Public
+ * 
+ * @param   {string} title - The title of the artwork.
+ * @param   {string} image_url - URL of the artwork image.
+ * @param   {string} location_geohash - Geohash representing the location of the artwork.
+ */
 router.post('/', async (req, res) => {
   const { title, image_url, location_geohash } = req.body;
 
@@ -35,7 +43,11 @@ router.post('/', async (req, res) => {
   }
 });
 
-// Retrieve all artworks
+/**
+ * @route   GET /api/artworks
+ * @desc    Retrieve all artworks
+ * @access  Public
+ */
 router.get('/', (req, res) => {
   db('artworks')
     .select()
@@ -43,7 +55,13 @@ router.get('/', (req, res) => {
     .catch((error) => res.status(500).json({ error }));
 });
 
-// Read One
+/**
+ * @route   GET /api/artworks/:id
+ * @desc    Retrieve a specific artwork by ID
+ * @access  Public
+ * 
+ * @param   {number} id - The ID of the artwork.
+ */
 router.get('/:id', async (req, res) => {
   const id = parseInt(req.params.id);
 
@@ -64,7 +82,17 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-// Update an artwork
+/**
+ * @route   PUT /api/artworks/:id
+ * @desc    Update an artwork by ID
+ * @access  Public
+ * 
+ * @param   {number} id - The ID of the artwork.
+ * @param   {string} title - The updated title of the artwork.
+ * @param   {string} artist_uuid - The updated UUID of the artist associated with the artwork.
+ * @param   {string} image_url - The updated URL of the artwork image.
+ * @param   {string} location - The updated location of the artwork.
+ */
 router.put('/:id', async (req, res) => {
   const { title, artist_uuid, image_url, location } = req.body;
   const id = req.params.id;
@@ -91,7 +119,13 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-// Delete an artwork
+/**
+ * @route   DELETE /api/artworks/:id
+ * @desc    Delete an artwork by ID
+ * @access  Public
+ * 
+ * @param   {number} id - The ID of the artwork to be deleted.
+ */
 router.delete('/:id', (req, res) => {
   const artworkId = req.params.id;
 

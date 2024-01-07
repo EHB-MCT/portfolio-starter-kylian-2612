@@ -4,15 +4,31 @@ const { v4: uuidv4 } = require('uuid');
 const knexfile = require('../../db/knexfile.js');
 const db = require('knex')(knexfile.development);
 
+/**
+ * @typedef {Object} Artist
+ * @property {string} uuid - The UUID of the artist.
+ * @property {string} artist - The name of the artist.
+ * @property {number} birthyear - The birth year of the artist.
+ * @property {number} num_artworks - The number of artworks created by the artist.
+ */
+
+/**
+ * @typedef {Object} Artwork
+ * @property {string} title - The title of the artwork.
+ * @property {string} artist_uuid - The UUID of the artist associated with the artwork.
+ * @property {string} image_url - The URL of the image representing the artwork.
+ * @property {string} location_geohash - The geohash representing the location of the artwork.
+ */
+
 describe('Artwork End-to-End Tests', () => {
   let insertedArtist;
-  let insertedRecord;
-  let exampleArtwork;
   let exampleArtist;
-  let createdArtistId;
   let addedArtworkId;
   let addedArtistId;
 
+  /**
+   * Setup before all tests, adding an example artist to the database.
+   */
   beforeAll(async () => {
     try {
       exampleArtist = {
@@ -28,11 +44,18 @@ describe('Artwork End-to-End Tests', () => {
     }
   });
 
+  /**
+   * Cleanup after all tests, deleting the example artist from the database.
+   */
   afterAll(async () => {
     await db('artists').where({ uuid: insertedArtist[0].uuid }).del();
     await db.destroy();
   });
 
+  /**
+   * Test to add a new artwork via POST /artworks.
+   * @param {Artwork} newArtwork - The artwork data to be added.
+   */
   test('should add a new artwork via POST /artworks', async () => {
     const newArtwork = {
       title: 'New Artwork',
@@ -46,6 +69,9 @@ describe('Artwork End-to-End Tests', () => {
     addedArtworkId = postResponse.body.artwork.id;
   });
 
+  /**
+   * Test to retrieve a specific artwork via GET /artworks/:id.
+   */
   test('should retrieve a specific artwork via GET /artworks/:id', async () => {
     const getResponse = await request(app).get(`/artworks/${addedArtworkId}`);
 
@@ -54,6 +80,10 @@ describe('Artwork End-to-End Tests', () => {
     expect(getResponse.body.id).toEqual(addedArtworkId);
   });
 
+  /**
+   * Test to update the artwork when valid data is provided.
+   * @param {Artwork} updatedArtwork - The updated artwork data.
+   */
   test('should update the artwork when valid data is provided', async () => {
     const updatedArtwork = {
       title: 'Updated Mona Lisa',
@@ -74,6 +104,10 @@ describe('Artwork End-to-End Tests', () => {
     expect(updatedRecord.location_geohash).toBe('u4pruydqqw44');
   });
 
+  /**
+   * Test to add a new artist via POST /artists.
+   * @param {Artist} newArtist - The artist data to be added.
+   */
   test('should add a new artist via POST /artists', async () => {
     const newArtist = {
       uuid: uuidv4(),
@@ -87,12 +121,19 @@ describe('Artwork End-to-End Tests', () => {
     addedArtistId = postResponse.body.artist.id;
   });
 
+  /**
+   * Test to retrieve a specific artist via GET /artists/:id.
+   */
   test('should retrieve a specific artist via GET /artists/:id', async () => {
     const getResponse = await request(app).get(`/artists/${addedArtistId}`);
     expect(getResponse.status).toBe(200);
     expect(getResponse.body.id).toEqual(addedArtistId);
   });
 
+  /**
+   * Test to update the artist via PUT /artists/:id.
+   * @param {Artist} updatedArtistData - The updated artist data.
+   */
   test('should update the artist via PUT /artists/:id', async () => {
     const updatedArtistData = {
       uuid: uuidv4(),
@@ -114,11 +155,17 @@ describe('Artwork End-to-End Tests', () => {
     expect(updatedResponse.num_artworks).toBe(updatedArtistData.num_artworks);
   });
 
+  /**
+   * Test to delete the artist via DELETE /artists/:id.
+   */
   test('should delete the artist via DELETE /artists/:id', async () => {
     const response = await request(app).delete(`/artists/${addedArtistId}`);
     expect(response.status).toBe(204);
   });
 
+  /**
+   * Test to delete the artwork via DELETE /artworks/:id.
+   */
   test('should delete the artwork via DELETE /artworks/:id', async () => {
     const response = await request(app).delete(`/artworks/${addedArtworkId}`);
     expect(response.status).toBe(204);

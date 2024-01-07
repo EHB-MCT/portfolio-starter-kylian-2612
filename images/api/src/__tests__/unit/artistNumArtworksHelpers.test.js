@@ -1,24 +1,34 @@
-const{checkArtistNumArtworks} = require("../../helpers/artistEndpointHelpers.js")
+const { checkArtistNumArtworks } = require("../../helpers/artistEndpointHelpers.js");
 
+/**
+ * @param {string} input - The input to check for the number of artworks.
+ * @returns {boolean} Returns true if the input is a valid number of artworks, otherwise false.
+ */
 test("check Artnumber", () => {
-    //check for empty input
+    // Check for empty input
     expect(checkArtistNumArtworks("")).toBe(false);
-    //check for a null input
-    expect(checkArtistNumArtworks(null)).toBe(false); 
-    //check for a number in string
+
+    // Check for null input
+    expect(checkArtistNumArtworks(null)).toBe(false);
+
+    // Check for a number in string
     expect(checkArtistNumArtworks("1990")).toBe(false);
     expect(checkArtistNumArtworks(false)).toBe(false);
     expect(checkArtistNumArtworks(undefined)).toBe(false);
-    //check for invalid characters
+
+    // Check for invalid characters
     expect(checkArtistNumArtworks("Ae8&")).toBe(false);
-    //check for invalid amount of artworks
+
+    // Check for invalid amount of artworks
     expect(checkArtistNumArtworks(1254366)).toBe(false);
-    //check for negative number
+
+    // Check for negative number
     expect(checkArtistNumArtworks(-1990)).toBe(false);
-    //check for floats
+
+    // Check for floats
     expect(checkArtistNumArtworks(1995.6)).toBe(false);
-    
+
+    // Check for valid number of artworks
     expect(checkArtistNumArtworks(6)).toBe(true);
     expect(checkArtistNumArtworks(55248)).toBe(true);
-})
-
+});

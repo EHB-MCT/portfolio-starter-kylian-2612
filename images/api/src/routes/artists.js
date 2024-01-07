@@ -6,8 +6,19 @@ const { checkArtistName, checkArtistBirthyear, checkArtistNumArtworks } = requir
 
 const db = knex(knexConfig.development);
 
-// Create a new artist
+/**
+ * @route   POST /artists
+ * @desc    Create a new artist
+ * @param   {Object} req - Express request object
+ * @param   {Object} res - Express response object
+ */
 router.post('/', (req, res) => {
+  /**
+   * @type {string} artist - Artist name
+   * @type {string} uuid - Artist UUID
+   * @type {number} birthyear - Artist birth year
+   * @type {number} num_artworks - Number of artworks by the artist
+   */
   const { artist, uuid, birthyear, num_artworks } = req.body;
 
   // Check if required fields are present
@@ -31,7 +42,12 @@ router.post('/', (req, res) => {
   }
 });
 
-// Retrieve all artists
+/**
+ * @route   GET /artists
+ * @desc    Retrieve all artists
+ * @param   {Object} req - Express request object
+ * @param   {Object} res - Express response object
+ */
 router.get('/', (req, res) => {
   db('artists')
     .select()
@@ -39,8 +55,16 @@ router.get('/', (req, res) => {
     .catch((error) => res.status(500).json({ error }));
 });
 
-// Read One artist
+/**
+ * @route   GET /artists/:id
+ * @desc    Read one artist by ID
+ * @param   {Object} req - Express request object
+ * @param   {Object} res - Express response object
+ */
 router.get('/:id', async (req, res) => {
+  /**
+   * @type {number} id - Artist ID
+   */
   const id = parseInt(req.params.id);
 
   if (id >= 0 && typeof id === 'number' && id < 99999999) {
@@ -58,8 +82,20 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-// Update an artist
+/**
+ * @route   PUT /artists/:id
+ * @desc    Update an artist by ID
+ * @param   {Object} req - Express request object
+ * @param   {Object} res - Express response object
+ */
 router.put('/:id', async (req, res) => {
+  /**
+   * @type {number} id - Artist ID
+   * @type {string} artist - Artist name
+   * @type {string} uuid - Artist UUID
+   * @type {number} birthyear - Artist birth year
+   * @type {number} num_artworks - Number of artworks by the artist
+   */
   const { artist, uuid, birthyear, num_artworks } = req.body;
   const id = req.params.id;
 
@@ -80,8 +116,16 @@ router.put('/:id', async (req, res) => {
     .catch((error) => res.status(500).json({ error }));
 });
 
-// Delete an artist
+/**
+ * @route   DELETE /artists/:id
+ * @desc    Delete an artist by ID
+ * @param   {Object} req - Express request object
+ * @param   {Object} res - Express response object
+ */
 router.delete('/:id', async (req, res) => {
+  /**
+   * @type {number} id - Artist ID
+   */
   const id = req.params.id;
 
   // Check if the ID is valid

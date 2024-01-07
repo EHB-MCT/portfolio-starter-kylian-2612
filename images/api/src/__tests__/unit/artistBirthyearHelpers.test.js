@@ -1,24 +1,38 @@
-const{checkArtistBirthyear} = require("../../helpers/artistEndpointHelpers.js")
- 
+/**
+ * Checks if the provided value is a valid artist birth year.
+ *
+ * @param {string|number|null|boolean|undefined} value - The value to be checked for a valid artist birth year.
+ * @returns {boolean} Returns true if the value is a valid artist birth year, otherwise false.
+ */
+const { checkArtistBirthyear } = require("../../helpers/artistEndpointHelpers.js");
+
 test("check birthyear", () => {
-    //check for empty input
+    // Check for empty input
     expect(checkArtistBirthyear("")).toBe(false);
-    //check for a null input
+
+    // Check for a null input
     expect(checkArtistBirthyear(null)).toBe(false);
-    //check for a number in string
+
+    // Check for a number in string
     expect(checkArtistBirthyear("1990")).toBe(false);
-    //check for a numeric name
+
+    // Check for a numeric name
     expect(checkArtistBirthyear(1)).toBe(false);
     expect(checkArtistBirthyear(false)).toBe(false);
     expect(checkArtistBirthyear(undefined)).toBe(false);
-    //check for invalid birthyear long year
-    expect(checkArtistBirthyear(12345)).toBe(false)
-    //check for invalid characters
+
+    // Check for invalid birth year (long year)
+    expect(checkArtistBirthyear(12345)).toBe(false);
+
+    // Check for invalid characters
     expect(checkArtistBirthyear("Ae8&")).toBe(false);
-    //check for negative number
+
+    // Check for negative number
     expect(checkArtistBirthyear(-1990)).toBe(false);
-    //check for floats
+
+    // Check for floats
     expect(checkArtistBirthyear(1995.6)).toBe(false);
-    
+
+    // Check for a valid birth year
     expect(checkArtistBirthyear(2001)).toBe(true);
-} )
+});
