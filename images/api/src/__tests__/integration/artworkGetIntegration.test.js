@@ -50,11 +50,13 @@ beforeAll(async () => {
  * Cleanup function to delete the test records from the database after testing.
  */
 afterAll(async () => {
-  // Clean up: Delete the test record from the database after the test
-  // Uncomment the following lines when you are ready to implement the cleanup logic
-  await knex('artworks').where({ id: exampleArtwork.id }).del();
-  await knex('artists').where({ uuid: exampleArtist.uuid }).del();
-  await knex.destroy();
+  try{
+    await knex('artworks').where({ id: exampleArtwork.id }).del();
+    await knex('artists').where({ uuid: exampleArtist.uuid }).del();
+    await knex.destroy();
+  } catch (error){
+    console.log('error', error);
+  }
 });
 
 describe('GET /artworks/:id', () => {

@@ -139,6 +139,7 @@ router.delete('/:id', async (req, res) => {
     if (!artist) {
       return res.status(404).json({ error: 'Artist not found' });
     }
+    await db('artists').where({ id }).del();
 
     res.status(204).send();
   } catch (error) {

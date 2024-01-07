@@ -40,7 +40,7 @@ beforeAll(async () => {
     insertedRecord = await knex('artworks').insert({ ...exampleArtwork }).returning('*');
     exampleArtwork.id = insertedRecord[0].id;
   } catch (error) {
-    console.error(error);
+    console.log('error',error);
   }
 });
 

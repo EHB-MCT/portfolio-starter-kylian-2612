@@ -107,6 +107,8 @@ describe('UPDATE /artworks/:id', () => {
     expect(updatedRecord.title).toBe(updatedArtwork.title);
     expect(updatedRecord.image_url).toBe(updatedArtwork.image_url);
     expect(updatedRecord.location_geohash).toBe('u4pruydqqw44');
+
+
   });
 
   /**
@@ -144,6 +146,7 @@ describe('UPDATE /artworks/:id', () => {
 
     // Assertions
     expect(response.status).toBe(200);
+    await knex('artists').where({ uuid: validArtist.uuid}).del();
   });
 
   /**
