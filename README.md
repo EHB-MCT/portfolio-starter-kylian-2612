@@ -34,8 +34,11 @@ Ensure you have the following software installed:
 2. Run the following command:
 
    ```
-   docker-compose -f .\docker-compose.prod.yml up --build
+   docker-compose -f .\docker-compose.dev.yml up --build
    ```
+
+3. Your data can now be viewed on http://localhost:80 use /artworks and /artists to view data
+
 #### Installation test environment
 
 1. Copy the `.env.template` file to `.env`
