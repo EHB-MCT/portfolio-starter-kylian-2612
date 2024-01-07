@@ -102,7 +102,6 @@ Ensure you have the following software installed:
 - If an artwork is not found, the API responds with a 404 status and an error message.
 - Internal server errors result in a 500 status and an error message.
 
-For more details on setup and running the API, refer to the [full README](./README.md).
 
 ## Artist endpoints
 
@@ -167,8 +166,6 @@ For more details on setup and running the API, refer to the [full README](./READ
 - If an invalid or negative ID is provided, the API responds with a 401 status and an error message.
 - If an artist is not found, the API responds with a 404 status and an error message.
 - Internal server errors result in a 500 status and an error message.
-
-For more details on setup and running the API, refer to the [full README](./README.md).
 
 
 ## License
