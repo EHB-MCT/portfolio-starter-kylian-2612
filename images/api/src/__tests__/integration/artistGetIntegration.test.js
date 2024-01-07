@@ -43,7 +43,7 @@ describe('GET /artists/:id', () => {
       insertedRecord = await knex('artworks').insert({ ...exampleArtwork }).returning('*');
       exampleArtwork.id = insertedRecord[0].id;
     } catch (error) {
-      console.error(error);
+      console.log('error',error);
     }
   });
 
@@ -58,7 +58,7 @@ describe('GET /artists/:id', () => {
       await knex('artists').where({ uuid: exampleArtist.uuid }).del();
       await knex.destroy();
     } catch (error) {
-      console.error(error);
+      console.log('error',error);
     }
   });
 

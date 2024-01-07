@@ -15,34 +15,43 @@ let exampleArtist; // Declare exampleArtist here
 describe('POST /artworks/:id', () => {
   
   beforeAll(async () => {
-    // Create a new UUID for the artist
-    const ARTISTUUID = uuidv4();
-    exampleArtist = {
-      uuid: ARTISTUUID,
-      artist: 'Leonardo da Vinci',
-      birthyear: 1452,
-      num_artworks: 20
-    };
+    try{
+      // Create a new UUID for the artist
+      const ARTISTUUID = uuidv4();
+      exampleArtist = {
+        uuid: ARTISTUUID,
+        artist: 'Leonardo da Vinci',
+        birthyear: 1452,
+        num_artworks: 20
+      };
 
-    // Insert the artist
-    insertedArtist = await knex('artists').insert(exampleArtist).returning("*");
+      // Insert the artist
+      insertedArtist = await knex('artists').insert(exampleArtist).returning("*");
+  
+      // Define exampleArtwork using the insertedArtist
+      exampleArtwork = {
+        title: 'Mona Lisa',
+        artist_uuid: insertedArtist[0].uuid,
+        image_url: 'https://example.com/mona_lisa.jpg',
+        location_geohash: 'u4pruydqqw43'
+      };
+    } catch (error){
+      console.log('error', error)
+    }
 
-    // Define exampleArtwork using the insertedArtist
-    exampleArtwork = {
-      title: 'Mona Lisa',
-      artist_uuid: insertedArtist[0].uuid,
-      image_url: 'https://example.com/mona_lisa.jpg',
-      location_geohash: 'u4pruydqqw43'
-    };
   });
 
   /**
    * @description Cleans up the test data after running the tests.
    */
   afterAll(async () => {
-    // Clean up: Delete the test record from the database after the test
-    await knex('artists').where({ id: insertedArtist[0].id }).del();
-    await knex.destroy();
+    try{
+      // Clean up: Delete the test record from the database after the test
+      await knex('artists').where({ id: insertedArtist[0].id }).del();
+      await knex.destroy();
+    } catch (error){
+      console.log('error', error);
+    }
   });
 
   /**

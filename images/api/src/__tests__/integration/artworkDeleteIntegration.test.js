@@ -49,9 +49,13 @@ describe('DELETE /artworks/:id', () => {
    * @afterAll
    */
   afterAll(async () => {
-    await knex('artworks').where({ id: exampleArtwork.id }).del();
-    await knex('artists').where({ uuid: exampleArtist.uuid }).del();
-    await knex.destroy();
+    try{
+      await knex('artworks').where({ id: exampleArtwork.id }).del();
+      await knex('artists').where({ uuid: exampleArtist.uuid }).del();
+      await knex.destroy();
+    } catch(error){
+      console.log('error', error);
+    }
   });
 
   /**
