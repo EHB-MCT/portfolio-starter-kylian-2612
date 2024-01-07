@@ -9,8 +9,11 @@ let insertedArtist;
 let exampleArtwork;
 let exampleArtist; // Declare exampleArtist here
 
+/**
+ * @description Sets up the necessary data before running the tests.
+ */
 describe('POST /artworks/:id', () => {
-
+  
   beforeAll(async () => {
     // Create a new UUID for the artist
     const ARTISTUUID = uuidv4();
@@ -33,12 +36,18 @@ describe('POST /artworks/:id', () => {
     };
   });
 
+  /**
+   * @description Cleans up the test data after running the tests.
+   */
   afterAll(async () => {
     // Clean up: Delete the test record from the database after the test
     await knex('artists').where({ id: insertedArtist[0].id }).del();
     await knex.destroy();
   });
 
+  /**
+   * @description Tests if a valid artwork can be created successfully.
+   */
   test('should create artwork with valid data', async () => {
     // Send a POST request with valid artwork data
     const response = await request(app)
@@ -62,6 +71,9 @@ describe('POST /artworks/:id', () => {
     await request(app).delete(`/artworks/${response.body.artwork.id}`);
   });
 
+  /**
+   * @description Tests if artwork creation fails with invalid data (missing required fields).
+   */
   test('should not create artwork with invalid data', async () => {
     // Send a POST request with invalid artwork data (missing required fields)
     const response = await request(app)
@@ -73,6 +85,9 @@ describe('POST /artworks/:id', () => {
     expect(response.status).toBe(500);
   });
 
+  /**
+   * @description Tests if a request with an invalid artwork ID returns a 401 status code.
+   */
   test('should return 401, wrong artwork record', async () => {
     // Send a GET request to the endpoint with an invalid ID
     const response = await request(app)

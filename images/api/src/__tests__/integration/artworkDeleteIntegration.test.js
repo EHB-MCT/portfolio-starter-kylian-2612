@@ -9,6 +9,10 @@ let insertedRecord;
 let exampleArtwork;
 let exampleArtist;
 
+/**
+ * @description Set up necessary data for testing DELETE /artworks/:id endpoint.
+ * @beforeAll
+ */
 describe('DELETE /artworks/:id', () => {
   beforeAll(async () => {
     try {
@@ -40,40 +44,47 @@ describe('DELETE /artworks/:id', () => {
     }
   });
 
+  /**
+   * @description Clean up: Delete the test record from the database after the test.
+   * @afterAll
+   */
   afterAll(async () => {
-    // Clean up: Delete the test record from the database after the test
     await knex('artworks').where({ id: exampleArtwork.id }).del();
     await knex('artists').where({ uuid: exampleArtist.uuid }).del();
     await knex.destroy();
   });
 
+  /**
+   * @description Test if the artwork is deleted when a valid ID is provided.
+   * @test
+   */
   test('should delete the artwork when a valid ID is provided', async () => {
-    // Send a DELETE request to the endpoint with the correct ID
     const response = await request(app).delete(`/artworks/${exampleArtwork.id}`);
-    
-    // Check the response status
+
     expect(response.status).toBe(204);
-  
-    // Fetch the artwork from the database using the ID
+
     const knexRecord = await knex("artworks").select("*").where("id", exampleArtwork.id);
-  
-    // Check that the artwork no longer exists in the database
+
     expect(knexRecord.length).toBe(0);
   });
 
+  /**
+   * @description Test if 404 is returned when trying to delete a non-existing artwork.
+   * @test
+   */
   test('should return 404 when trying to delete a non-existing artwork', async () => {
-    // Send a DELETE request to the endpoint with the non-existing ID
     const response = await request(app).delete(`/artworks/${exampleArtwork.id}`);
-  
-    // Check the response status
+
     expect(response.status).toBe(404);
   });
 
+  /**
+   * @description Test if 401 is returned when trying to delete with an invalid ID.
+   * @test
+   */
   test('should return 401 when trying to delete with an invalid ID', async () => {
-    // Send a DELETE request to the endpoint with an invalid ID
     const response = await request(app).delete(`/artworks/invalid_id`);
-    
-    // Check the response status
+
     expect(response.status).toBe(401);
   });
 });
