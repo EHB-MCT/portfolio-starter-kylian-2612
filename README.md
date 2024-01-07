@@ -106,6 +106,70 @@ For more details on setup and running the API, refer to the [full README](./READ
 
 ## Artist endpoints
 
+### Create Artist
+
+- **Route:** `POST /artists`
+- **Description:** Create a new artist
+- **Access:** Public
+
+##### Request Body
+
+- `artist` (string): Artist name
+- `uuid` (string): Artist UUID
+- `birthyear` (number): Artist birth year
+- `num_artworks` (number): Number of artworks by the artist
+
+### Retrieve All Artists
+
+- **Route:** `GET /artists`
+- **Description:** Retrieve all artists
+- **Access:** Public
+
+### Retrieve Artist by ID
+
+- **Route:** `GET /artists/:id`
+- **Description:** Read one artist by ID
+- **Access:** Public
+
+##### Request Parameters
+
+- `id` (number): Artist ID
+
+### Update Artist by ID
+
+- **Route:** `PUT /artists/:id`
+- **Description:** Update an artist by ID
+- **Access:** Public
+
+##### Request Parameters
+
+- `id` (number): Artist ID
+
+##### Request Body
+
+- `artist` (string): Updated artist name
+- `uuid` (string): Updated artist UUID
+- `birthyear` (number): Updated artist birth year
+- `num_artworks` (number): Updated number of artworks by the artist
+
+### Delete Artist by ID
+
+- **Route:** `DELETE /artists/:id`
+- **Description:** Delete an artist by ID
+- **Access:** Public
+
+##### Request Parameters
+
+- `id` (number): Artist ID
+
+### Error Handling
+
+- If an invalid or negative ID is provided, the API responds with a 401 status and an error message.
+- If an artist is not found, the API responds with a 404 status and an error message.
+- Internal server errors result in a 500 status and an error message.
+
+For more details on setup and running the API, refer to the [full README](./README.md).
+
 
 ## License
 
