@@ -17,7 +17,7 @@ Ensure you have the following software installed:
 - Docker
 - Docker Compose
 
-##Clone the Repository
+## Clone the Repository
 1. Clone the repository using Git: 
    ```
    git clone https://github.com/EHB-MCT/portfolio-starter-kylian-2612.git
