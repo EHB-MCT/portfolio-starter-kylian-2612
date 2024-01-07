@@ -4,6 +4,7 @@ services:
   api:
     build:
       context: ./images/api
+    container_name: api
     env_file:
       - .env
     ports:
@@ -15,6 +16,7 @@ services:
     depends_on:
       store:
         condition: service_healthy
+    command: ["npm", "run", "developmentStart"]
 
   store:
     image: postgres:latest
@@ -26,7 +28,7 @@ services:
       POSTGRES_DB: 
       POSTGRES_HOST_AUTH_METHOD:
     volumes:
-      - ./_backup:/var/lib/postgresql/data
+      - ./_developmentBackup:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $POSTGRES_USER -d $POSTGRES_DB"]
       interval: 5s

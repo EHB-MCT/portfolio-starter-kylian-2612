@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "developmentStart":"npx knex migrate:latest --cwd ./src/db && node src/index.js",
     "migrate": "npx knex migrate:latest --cwd ./src/db",
     "test-watch": "jest --watchAll --detectOpenHandles",
     "test": "jest --detectOpenHandles",
