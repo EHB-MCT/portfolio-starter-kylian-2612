@@ -34,7 +34,7 @@ Ensure you have the following software installed:
 2. Run the following command:
 
    ```
-   docker-compose -f .\docker-compose.prod.yml up
+   docker-compose -f .\docker-compose.prod.yml up --build
    ```
 #### Installation test environment
 
@@ -42,7 +42,7 @@ Ensure you have the following software installed:
 2. Run the following command:
 
    ```
-   docker-compose -f .\docker-compose.test.yml up
+   docker-compose -f .\docker-compose.test.yml up --build
    ```
 
 ## Status 
